@@ -7,51 +7,51 @@ import (
 	"strconv"
 )
 
-type RouterOSConfigAuth struct {
+type RouterOSAuth struct {
 	username *string
 	password *string
 }
 
-type RouterOSConfig struct {
+type RouterOS struct {
 	host   *string
 	port   *int
-	auth   *RouterOSConfigAuth
+	auth   *RouterOSAuth
 	secure *tls.Config
 }
 
 // Default values for RouterOSConfig
 var (
-	DefaultHost     = "192.168.88.1"
-	DefaultPort     = 8728
-	DefaultUsername = "admin"
-	DefaultPassword = ""
-	DefaultSecure   = &tls.Config{InsecureSkipVerify: true}
+	defaultHost     = "192.168.88.1"
+	defaultPort     = 8728
+	defaultUsername = "admin"
+	defaultPassword = ""
+	defaultSecure   = &tls.Config{InsecureSkipVerify: true}
 )
 
 // getInstance returns a connected RouterOS client instance.
-func (options *RouterOSConfig) getInstance() *routeros.Client {
+func (options *RouterOS) getInstance() *routeros.Client {
 	// Set default values if not provided
 	if options.host == nil {
-		host := DefaultHost
+		host := defaultHost
 		options.host = &host
 	}
 	if options.port == nil {
-		port := DefaultPort
+		port := defaultPort
 		options.port = &port
 	}
 	if options.auth == nil {
-		options.auth = &RouterOSConfigAuth{}
+		options.auth = &RouterOSAuth{}
 	}
 	if options.auth.username == nil {
-		username := DefaultUsername
+		username := defaultUsername
 		options.auth.username = &username
 	}
 	if options.auth.password == nil {
-		password := DefaultPassword
+		password := defaultPassword
 		options.auth.password = &password
 	}
 	if options.secure == nil {
-		options.secure = DefaultSecure
+		options.secure = defaultSecure
 	}
 
 	// Construct address
