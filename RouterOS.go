@@ -7,15 +7,15 @@ import (
 	"strconv"
 )
 
-type RouterOSAuth struct {
+type RouterOSConfigAuth struct {
 	username *string
 	password *string
 }
 
-type RouterOS struct {
+type RouterOSConfig struct {
 	host   *string
 	port   *int
-	auth   *RouterOSAuth
+	auth   *RouterOSConfigAuth
 	secure *tls.Config
 }
 
@@ -29,7 +29,7 @@ var (
 )
 
 // getInstance returns a connected RouterOS client instance.
-func (options *RouterOS) Connect() *routeros.Client {
+func RouterOS(options *RouterOSConfig) *routeros.Client {
 	// Set default values if not provided
 	if options.host == nil {
 		host := defaultHost
@@ -40,7 +40,7 @@ func (options *RouterOS) Connect() *routeros.Client {
 		options.port = &port
 	}
 	if options.auth == nil {
-		options.auth = &RouterOSAuth{}
+		options.auth = &RouterOSConfigAuth{}
 	}
 	if options.auth.username == nil {
 		username := defaultUsername
