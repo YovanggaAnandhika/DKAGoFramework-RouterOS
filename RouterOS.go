@@ -29,7 +29,7 @@ var (
 )
 
 // getInstance returns a connected RouterOS client instance.
-func (options *RouterOS) getInstance() *routeros.Client {
+func (options *RouterOS) Connect() *routeros.Client {
 	// Set default values if not provided
 	if options.host == nil {
 		host := defaultHost
