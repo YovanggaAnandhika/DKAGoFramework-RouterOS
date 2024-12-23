@@ -8,15 +8,15 @@ import (
 )
 
 type RouterOSConfigAuth struct {
-	username *string
-	password *string
+	Username *string
+	Password *string
 }
 
 type RouterOSConfig struct {
-	host   *string
-	port   *int
-	auth   *RouterOSConfigAuth
-	secure *tls.Config
+	Host   *string
+	Port   *int
+	Auth   *RouterOSConfigAuth
+	Secure *tls.Config
 }
 
 // Default values for RouterOSConfig
@@ -28,53 +28,58 @@ var (
 	defaultSecure   = &tls.Config{InsecureSkipVerify: true}
 )
 
-// getInstance returns a connected RouterOS client instance.
-func RouterOS(options *RouterOSConfig) *routeros.Client {
+// Connect establishes a connection to a RouterOS device and returns the client instance.
+func (options *RouterOSConfig) Connect() (*routeros.Client, error) {
 	// Set default values if not provided
-	if options.host == nil {
+	if options.Host == nil {
 		host := defaultHost
-		options.host = &host
+		options.Host = &host
 	}
-	if options.port == nil {
+	if options.Port == nil {
 		port := defaultPort
-		options.port = &port
+		options.Port = &port
 	}
-	if options.auth == nil {
-		options.auth = &RouterOSConfigAuth{}
+	if options.Auth == nil {
+		options.Auth = &RouterOSConfigAuth{}
 	}
-	if options.auth.username == nil {
+	if options.Auth.Username == nil {
 		username := defaultUsername
-		options.auth.username = &username
+		options.Auth.Username = &username
 	}
-	if options.auth.password == nil {
+	if options.Auth.Password == nil {
 		password := defaultPassword
-		options.auth.password = &password
+		options.Auth.Password = &password
 	}
-	if options.secure == nil {
-		options.secure = defaultSecure
+	if options.Secure == nil {
+		options.Secure = defaultSecure
 	}
 
 	// Construct address
-	address := *options.host + ":" + strconv.Itoa(*options.port)
+	address := *options.Host + ":" + strconv.Itoa(*options.Port)
+
 	var client *routeros.Client
 	var err error
 
-	if options.secure != nil {
-		client, err = routeros.DialTLS(address, *options.auth.username, *options.auth.password, options.secure)
+	// Connect using TLS if secure config is provided, otherwise use plain connection
+	if options.Secure != nil {
+		client, err = routeros.DialTLS(address, *options.Auth.Username, *options.Auth.Password, options.Secure)
 	} else {
-		client, err = routeros.Dial(address, *options.auth.username, *options.auth.password)
+		client, err = routeros.Dial(address, *options.Auth.Username, *options.Auth.Password)
 	}
 
 	if err != nil {
-		log.Fatalf("Failed to connect to RouterOS: %v", err)
+		log.Printf("Failed to connect to RouterOS: %v", err)
+		return nil, err
 	}
 
-	// Ensure the connection is closed when done
-	defer func() {
-		if err := client.Close(); err != nil {
-			log.Fatal(err)
-		}
-	}()
+	return client, nil
+}
 
-	return client
+// GetInstance creates and returns a RouterOS client instance using the provided configuration.
+func Client(options *RouterOSConfig) (*routeros.Client, error) {
+	client, err := options.Connect()
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
 }
