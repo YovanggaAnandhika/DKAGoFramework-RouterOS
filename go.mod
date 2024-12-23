@@ -1,4 +1,4 @@
-module DKAGoFramework-RouterOS
+module github.com/YovanggaAnandhika/DKAGoFramework-RouterOS
 
 go 1.23.4
 
