@@ -1,6 +1,7 @@
 package ip
 
 import (
+	"github.com/YovanggaAnandhika/DKAGoFramework-RouterOS/classes/main/ip/address"
 	"github.com/go-routeros/routeros/v3"
 )
 
@@ -9,8 +10,12 @@ type IP struct {
 	Prefix string
 }
 
-func (IP *IP) Print() (*routeros.Reply, error) {
-	cmd := IP.Prefix + "/print"
-	res, err := IP.Client.Run(cmd)
-	return res, err
+func (IP *IP) Address() *action.Action {
+	//#############################################
+	prefix := IP.Prefix + "/address"
+	//#############################################
+	return &action.Action{
+		Client: IP.Client,
+		Prefix: prefix,
+	}
 }

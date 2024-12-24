@@ -22,13 +22,6 @@ func (options *Classes) Interface() *interfaces.Interfaces {
 }
 
 func (options *Classes) Ip() *ip.IP {
-
-	defer func(Client *routeros.Client) {
-		err := Client.Close()
-		if err != nil {
-			return
-		}
-	}(options.Client)
 	//#############################################
 	prefix := "/ip"
 	//#############################################
@@ -36,4 +29,13 @@ func (options *Classes) Ip() *ip.IP {
 		Client: options.Client,
 		Prefix: prefix,
 	}
+}
+
+func (options *Classes) Print() (*routeros.Reply, error) {
+	cmd := "/ip/print"
+	res, err := options.Client.Run(cmd)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }

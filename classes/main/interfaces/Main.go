@@ -10,7 +10,15 @@ type Interfaces struct {
 }
 
 func (interfaces *Interfaces) Print() (*routeros.Reply, error) {
+	defer func(Client *routeros.Client) {
+		err := Client.Close()
+		if err != nil {
+			return
+		}
+	}(interfaces.Client)
+	//#####################################
 	cmd := interfaces.Prefix + "/print"
+	//#####################################
 	res, err := interfaces.Client.Run(cmd)
 	if err != nil {
 		return nil, err

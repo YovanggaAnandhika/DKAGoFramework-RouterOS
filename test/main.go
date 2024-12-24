@@ -22,11 +22,11 @@ func main() {
 	}
 
 	connection, err := client.Connect()
-	iface, err := connection.Interface().Print()
+	res, err := connection.Interface().Print()
 
 	if err != nil {
-		log.Printf("Error 2: %v", err)
+		log.Fatalf("error fatal %s", err)
 		return
 	}
-	log.Print(iface)
+	log.Print(res)
 }
