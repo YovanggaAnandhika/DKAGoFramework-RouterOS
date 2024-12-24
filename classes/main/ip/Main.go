@@ -7,7 +7,7 @@ type IP struct {
 	Prefix string
 }
 
-func (ip IP) print() (reply *routeros.Reply, err error) {
+func (ip *IP) print() (reply *routeros.Reply, err error) {
 	cmd := ip.Prefix + "/print"
 	res, err := ip.Client.Run(cmd)
 	return res, err
