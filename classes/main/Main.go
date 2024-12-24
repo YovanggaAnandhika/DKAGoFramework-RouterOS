@@ -1,4 +1,4 @@
-package main
+package classes
 
 import (
 	"github.com/YovanggaAnandhika/DKAGoFramework-RouterOS/classes/main/interfaces"
@@ -7,11 +7,11 @@ import (
 	"log"
 )
 
-type Main struct {
+type Classes struct {
 	Client *routeros.Client
 }
 
-func (options Main) Interfaces() (iface *interfaces.Interfaces) {
+func (options Classes) Interfaces() *interfaces.Interfaces {
 	defer func(Client *routeros.Client) {
 		err := Client.Close()
 		if err != nil {
@@ -27,7 +27,7 @@ func (options Main) Interfaces() (iface *interfaces.Interfaces) {
 	}
 }
 
-func (options Main) Ip() (ipMenu *ip.IP) {
+func (options Classes) Ip() *ip.IP {
 	defer func(Client *routeros.Client) {
 		err := Client.Close()
 		if err != nil {

@@ -7,7 +7,7 @@ type Interfaces struct {
 	Prefix string
 }
 
-func (interfaces Interfaces) print() (reply *routeros.Reply, err error) {
+func (interfaces *Interfaces) Print() (reply *routeros.Reply, err error) {
 	cmd := interfaces.Prefix + "/print"
 	res, err := interfaces.Client.Run(cmd)
 	return res, err
