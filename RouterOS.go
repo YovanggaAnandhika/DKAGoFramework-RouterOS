@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"github.com/YovanggaAnandhika/DKAGoFramework-RouterOS/classes/connection"
+	"github.com/YovanggaAnandhika/DKAGoFramework-RouterOS/classes/main"
 	"github.com/go-routeros/routeros/v3"
 	"log"
 	"os"
@@ -67,7 +67,7 @@ func createTLSConfig(certFile string, keyFile string, caCertFile string) (*tls.C
 }
 
 // Client Connect establishes a connection to a RouterOS device and returns the client instance.
-func Client(options *RouterOSConfig) (*connection.Connection, error) {
+func Client(options *RouterOSConfig) (*main.Main, error) {
 
 	var client *routeros.Client
 	var err error
@@ -113,5 +113,5 @@ func Client(options *RouterOSConfig) (*connection.Connection, error) {
 		return nil, err
 	}
 
-	return &connection.Connection{Client: client}, nil
+	return &main.Main{Client: client}, nil
 }
