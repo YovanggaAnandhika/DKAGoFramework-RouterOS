@@ -69,5 +69,5 @@ func Client(options *RouterOSConfig) (*connection.Connection, error) {
 		return nil, err
 	}
 
-	return &connection.Connection{Client: client}, nil
+	return &connection.Connection{client: client}, nil
 }

@@ -3,9 +3,9 @@ package connection
 import "github.com/go-routeros/routeros/v3"
 
 type Connection struct {
-	Client *routeros.Client
+	client *routeros.Client
 }
 
-func (options *Connection) GetInterfaces() {
+func (options Connection) GetInterfaces() {
 
 }
