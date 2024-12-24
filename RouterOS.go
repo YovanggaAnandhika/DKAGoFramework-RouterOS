@@ -2,6 +2,7 @@ package RouterOS
 
 import (
 	"crypto/tls"
+	"github.com/YovanggaAnandhika/DKAGoFramework-RouterOS/classes/connection"
 	"github.com/go-routeros/routeros/v3"
 	"log"
 	"strconv"
@@ -21,15 +22,15 @@ type RouterOSConfig struct {
 
 // Default values for RouterOSConfig
 var (
-	defaultHost     = "192.168.88.1"
-	defaultPort     = 8728
+	defaultHost     = "192.168.1.1"
+	defaultPort     = 8729
 	defaultUsername = "admin"
 	defaultPassword = ""
-	defaultSecure   = &tls.Config{InsecureSkipVerify: true}
+	defaultSecure   = &tls.Config{}
 )
 
 // Connect establishes a connection to a RouterOS device and returns the client instance.
-func (options *RouterOSConfig) Connect() (*routeros.Client, error) {
+func Client(options *RouterOSConfig) (*connection.Connection, error) {
 	// Set default values if not provided
 	if options.Host == "" {
 		options.Host = defaultHost
@@ -68,14 +69,5 @@ func (options *RouterOSConfig) Connect() (*routeros.Client, error) {
 		return nil, err
 	}
 
-	return client, nil
-}
-
-// GetInstance creates and returns a RouterOS client instance using the provided configuration.
-func Client(options *RouterOSConfig) (*routeros.Client, error) {
-	client, err := options.Connect()
-	if err != nil {
-		return nil, err
-	}
-	return client, nil
+	return &connection.Connection{Client: client}, nil
 }
