@@ -1,27 +1,24 @@
-package interfaces
+package action
 
 import (
 	"github.com/go-routeros/routeros/v3"
 )
 
-type Interfaces struct {
+type Nat struct {
 	Client *routeros.Client
 	Prefix string
 }
 
-func (interfaces *Interfaces) Print() (*routeros.Reply, error) {
+func (nat *Nat) Print() (*routeros.Reply, error) {
 	defer func(Client *routeros.Client) {
 		err := Client.Close()
 		if err != nil {
 			return
 		}
-	}(interfaces.Client)
+	}(nat.Client)
 	//#####################################
-	cmd := interfaces.Prefix + "/print"
+	cmd := nat.Prefix + "/print"
 	//#####################################
-	res, err := interfaces.Client.Run(cmd)
-	if err != nil {
-		return nil, err
-	}
-	return res, nil
+	res, err := nat.Client.Run(cmd)
+	return res, err
 }

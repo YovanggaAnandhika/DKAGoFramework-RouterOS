@@ -22,7 +22,7 @@ func main() {
 	}
 
 	connection, err := client.Connect()
-	res, err := connection.Interface().Print()
+	res, err := connection.UserManager().Router().Print()
 
 	if err != nil {
 		log.Fatalf("error fatal %s", err)
