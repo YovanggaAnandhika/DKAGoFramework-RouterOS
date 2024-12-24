@@ -27,7 +27,7 @@ func (options Main) Interfaces() (iface *interfaces.Interfaces) {
 	}
 }
 
-func (options Main) Ip() (iface *ip.IP) {
+func (options Main) Ip() (ipMenu *ip.IP) {
 	defer func(Client *routeros.Client) {
 		err := Client.Close()
 		if err != nil {
