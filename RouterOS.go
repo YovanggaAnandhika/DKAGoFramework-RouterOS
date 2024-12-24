@@ -8,13 +8,13 @@ import (
 )
 
 type RouterOSConfigAuth struct {
-	Username *string
-	Password *string
+	Username string
+	Password string
 }
 
 type RouterOSConfig struct {
-	Host   *string
-	Port   *int
+	Host   string
+	Port   int
 	Auth   *RouterOSConfigAuth
 	Secure *tls.Config
 }
@@ -31,40 +31,36 @@ var (
 // Connect establishes a connection to a RouterOS device and returns the client instance.
 func (options *RouterOSConfig) Connect() (*routeros.Client, error) {
 	// Set default values if not provided
-	if options.Host == nil {
-		host := defaultHost
-		options.Host = &host
+	if options.Host == "" {
+		options.Host = defaultHost
 	}
-	if options.Port == nil {
-		port := defaultPort
-		options.Port = &port
+	if options.Port == 0 {
+		options.Port = defaultPort
 	}
 	if options.Auth == nil {
 		options.Auth = &RouterOSConfigAuth{}
 	}
-	if options.Auth.Username == nil {
-		username := defaultUsername
-		options.Auth.Username = &username
+	if options.Auth.Username == "" {
+		options.Auth.Username = defaultUsername
 	}
-	if options.Auth.Password == nil {
-		password := defaultPassword
-		options.Auth.Password = &password
+	if options.Auth.Password == "" {
+		options.Auth.Password = defaultPassword
 	}
 	if options.Secure == nil {
 		options.Secure = defaultSecure
 	}
 
 	// Construct address
-	address := *options.Host + ":" + strconv.Itoa(*options.Port)
+	address := options.Host + ":" + strconv.Itoa(options.Port)
 
 	var client *routeros.Client
 	var err error
 
 	// Connect using TLS if secure config is provided, otherwise use plain connection
 	if options.Secure != nil {
-		client, err = routeros.DialTLS(address, *options.Auth.Username, *options.Auth.Password, options.Secure)
+		client, err = routeros.DialTLS(address, options.Auth.Username, options.Auth.Password, options.Secure)
 	} else {
-		client, err = routeros.Dial(address, *options.Auth.Username, *options.Auth.Password)
+		client, err = routeros.Dial(address, options.Auth.Username, options.Auth.Password)
 	}
 
 	if err != nil {
