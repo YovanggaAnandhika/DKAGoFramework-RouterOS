@@ -2,9 +2,12 @@ package RouterOS
 
 import (
 	"crypto/tls"
+	"crypto/x509"
+	"fmt"
 	"github.com/YovanggaAnandhika/DKAGoFramework-RouterOS/classes/connection"
 	"github.com/go-routeros/routeros/v3"
 	"log"
+	"os"
 	"strconv"
 )
 
@@ -13,11 +16,17 @@ type RouterOSConfigAuth struct {
 	Password string
 }
 
+type RouterOSConfigSecure struct {
+	CACertFile     string
+	ClientCertFile string
+	ClientKeyFile  string
+}
+
 type RouterOSConfig struct {
 	Host   string
 	Port   int
 	Auth   *RouterOSConfigAuth
-	Secure *tls.Config
+	Secure *RouterOSConfigSecure
 }
 
 // Default values for RouterOSConfig
@@ -26,11 +35,43 @@ var (
 	defaultPort     = 8729
 	defaultUsername = "admin"
 	defaultPassword = ""
-	defaultSecure   = &tls.Config{}
+	defaultSecure   = &RouterOSConfigSecure{}
 )
 
-// Connect establishes a connection to a RouterOS device and returns the client instance.
+// Function to configure TLS with options
+func createTLSConfig(certFile string, keyFile string, caCertFile string) (*tls.Config, error) {
+	// Load the client certificate
+	certificate, err := tls.LoadX509KeyPair(certFile, keyFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load client certificate: %v", err)
+	}
+
+	// Load CA certificate
+	caCert, err := os.ReadFile(caCertFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read CA certificate: %v", err)
+	}
+
+	// Create a Certificate Pool for the CA
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
+
+	// Create TLS config with custom options
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: false, // Ensure server certificate verification (set to true to skip)
+		RootCAs:            caCertPool,
+		Certificates:       []tls.Certificate{certificate}, // Set the client certificate
+	}
+
+	return tlsConfig, nil
+}
+
+// Client Connect establishes a connection to a RouterOS device and returns the client instance.
 func Client(options *RouterOSConfig) (*connection.Connection, error) {
+
+	var client *routeros.Client
+	var err error
+
 	// Set default values if not provided
 	if options.Host == "" {
 		options.Host = defaultHost
@@ -51,15 +92,18 @@ func Client(options *RouterOSConfig) (*connection.Connection, error) {
 		options.Secure = defaultSecure
 	}
 
+	TLSConfig, err := createTLSConfig(options.Secure.ClientCertFile, options.Secure.ClientKeyFile, options.Secure.CACertFile)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
 	// Construct address
 	address := options.Host + ":" + strconv.Itoa(options.Port)
 
-	var client *routeros.Client
-	var err error
-
 	// Connect using TLS if secure config is provided, otherwise use plain connection
 	if options.Secure != nil {
-		client, err = routeros.DialTLS(address, options.Auth.Username, options.Auth.Password, options.Secure)
+		client, err = routeros.DialTLS(address, options.Auth.Username, options.Auth.Password, TLSConfig)
 	} else {
 		client, err = routeros.Dial(address, options.Auth.Username, options.Auth.Password)
 	}
@@ -69,5 +113,5 @@ func Client(options *RouterOSConfig) (*connection.Connection, error) {
 		return nil, err
 	}
 
-	return &connection.Connection{client: client}, nil
+	return &connection.Connection{Client: client}, nil
 }
