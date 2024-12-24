@@ -3,12 +3,11 @@ package main
 import (
 	RouterOS "github.com/YovanggaAnandhika/DKAGoFramework-RouterOS"
 	"log"
-	_ "log"
 )
 
 func main() {
 
-	client, _ := RouterOS.Client(&RouterOS.RouterOSConfig{
+	client := RouterOS.Client{
 		Host: "server.dkaapis.com",
 		Port: 8729,
 		Auth: &RouterOS.RouterOSConfigAuth{
@@ -20,13 +19,14 @@ func main() {
 			ClientCertFile: "config/ssl/RouterOSClient.crt",
 			ClientKeyFile:  "config/ssl/RouterOSClient.key",
 		},
-	})
+	}
 
-	res, err := client.Interfaces().Print()
-	log.Print(res)
+	connection, err := client.Connect()
+	iface, err := connection.Interface().Print()
+
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Error 2: %v", err)
 		return
 	}
-	log.Print(res)
+	log.Print(iface)
 }

@@ -4,41 +4,36 @@ import (
 	"github.com/YovanggaAnandhika/DKAGoFramework-RouterOS/classes/main/interfaces"
 	"github.com/YovanggaAnandhika/DKAGoFramework-RouterOS/classes/main/ip"
 	"github.com/go-routeros/routeros/v3"
-	"log"
 )
 
 type Classes struct {
 	Client *routeros.Client
 }
 
-func (options Classes) Interfaces() *interfaces.Interfaces {
-	defer func(Client *routeros.Client) {
-		err := Client.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}(options.Client)
+func (options *Classes) Interface() *interfaces.Interfaces {
 	//#############################################
-	cmd := "/interface"
+	prefix := "/interface"
+	//##############################################
 	//#############################################
 	return &interfaces.Interfaces{
 		Client: options.Client,
-		Prefix: cmd,
+		Prefix: prefix,
 	}
 }
 
-func (options Classes) Ip() *ip.IP {
+func (options *Classes) Ip() *ip.IP {
+
 	defer func(Client *routeros.Client) {
 		err := Client.Close()
 		if err != nil {
-			log.Fatal(err)
+			return
 		}
 	}(options.Client)
 	//#############################################
-	cmd := "/ip"
+	prefix := "/ip"
 	//#############################################
 	return &ip.IP{
 		Client: options.Client,
-		Prefix: cmd,
+		Prefix: prefix,
 	}
 }

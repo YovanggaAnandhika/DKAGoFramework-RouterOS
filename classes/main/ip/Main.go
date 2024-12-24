@@ -1,6 +1,8 @@
 package ip
 
-import "github.com/go-routeros/routeros/v3"
+import (
+	"github.com/go-routeros/routeros/v3"
+)
 
 type IP struct {
 	Client *routeros.Client

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	classes "github.com/YovanggaAnandhika/DKAGoFramework-RouterOS/classes/main"
 	"github.com/go-routeros/routeros/v3"
-	"log"
 	"os"
 	"strconv"
 )
@@ -22,7 +21,7 @@ type RouterOSConfigSecure struct {
 	ClientKeyFile  string
 }
 
-type RouterOSConfig struct {
+type Client struct {
 	Host   string
 	Port   int
 	Auth   *RouterOSConfigAuth
@@ -66,8 +65,8 @@ func createTLSConfig(certFile string, keyFile string, caCertFile string) (*tls.C
 	return tlsConfig, nil
 }
 
-// Client Connect establishes a connection to a RouterOS device and returns the client instance.
-func Client(options *RouterOSConfig) (*classes.Classes, error) {
+// Connect Client Connect establishes a connection to a RouterOS device and returns the client instance.
+func (options *Client) Connect() (*classes.Classes, error) {
 
 	var client *routeros.Client
 	var err error
@@ -93,10 +92,6 @@ func Client(options *RouterOSConfig) (*classes.Classes, error) {
 	}
 
 	TLSConfig, err := createTLSConfig(options.Secure.ClientCertFile, options.Secure.ClientKeyFile, options.Secure.CACertFile)
-	if err != nil {
-		log.Fatal(err)
-		return nil, err
-	}
 
 	// Construct address
 	address := options.Host + ":" + strconv.Itoa(options.Port)
@@ -108,10 +103,5 @@ func Client(options *RouterOSConfig) (*classes.Classes, error) {
 		client, err = routeros.Dial(address, options.Auth.Username, options.Auth.Password)
 	}
 
-	if err != nil {
-
-		return nil, err
-	}
-
-	return &classes.Classes{Client: client}, nil
+	return &classes.Classes{Client: client}, err
 }
